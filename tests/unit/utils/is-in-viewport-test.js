@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import isInViewport from 'ember-in-viewport/utils/is-in-viewport';
 import { module, test } from 'qunit';
 
@@ -46,8 +47,27 @@ test('returns true if dimensions are within viewport', function(assert) {
 
 test('returns false if dimensions not within viewport', function(assert) {
   const { innerHeight, innerWidth } = fakeWindow;
-  const result = isInViewport(fakeRectNotInViewport, innerHeight, innerWidth, fakeNoTolerance);
+  let result = isInViewport(fakeRectNotInViewport, innerHeight, innerWidth, fakeNoTolerance);
+
   assert.ok(!result);
+
+  // Relax bottom tolerance
+  result = isInViewport(
+    fakeRectNotInViewport,
+    innerHeight,
+    innerWidth,
+    Ember.merge(fakeNoTolerance, { bottom: Infinity })
+  );
+
+  assert.ok(!result);
+
+  // Relax top tolerance
+  result = isInViewport(
+    fakeRectNotInViewport,
+    innerHeight,
+    innerWidth,
+    Ember.merge(fakeNoTolerance, { top: -Infinity })
+  );
 });
 
 test('returns true if dimensions not within viewport but within tolerance', function(assert) {
